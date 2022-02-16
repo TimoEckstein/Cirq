@@ -29,6 +29,7 @@ import random
 import string
 from typing import Dict, Iterable, List, Optional, Sequence, Set, TypeVar, Union, TYPE_CHECKING
 
+import duet
 import google.auth
 from google.protobuf import any_pb2
 
@@ -271,7 +272,7 @@ class Engine(abstract_engine.AbstractEngine):
         )[0]
 
     @util.deprecated_gate_set_parameter
-    def run_sweep(
+    async def run_sweep_async(
         self,
         program: cirq.AbstractCircuit,
         program_id: Optional[str] = None,
@@ -321,10 +322,10 @@ class Engine(abstract_engine.AbstractEngine):
         Raises:
             ValueError: If no gate set is provided.
         """
-        engine_program = self.create_program(
+        engine_program = await self.create_program_async(
             program, program_id, description=program_description, labels=program_labels
         )
-        return engine_program.run_sweep(
+        return await engine_program.run_sweep(
             job_id=job_id,
             params=params,
             repetitions=repetitions,
@@ -332,6 +333,8 @@ class Engine(abstract_engine.AbstractEngine):
             description=job_description,
             labels=job_labels,
         )
+
+    run_sweep = duet.sync(run_sweep_async)
 
     @util.deprecated_gate_set_parameter
     def run_batch(
@@ -494,7 +497,7 @@ class Engine(abstract_engine.AbstractEngine):
         )
 
     @util.deprecated_gate_set_parameter
-    def create_program(
+    async def create_program_async(
         self,
         program: cirq.AbstractCircuit,
         program_id: Optional[str] = None,
@@ -525,7 +528,7 @@ class Engine(abstract_engine.AbstractEngine):
         if not program_id:
             program_id = _make_random_id('prog-')
 
-        new_program_id, new_program = self.context.client.create_program(
+        new_program_id, new_program = await self.context.client.create_program_async(
             self.project_id,
             program_id,
             code=self.context._serialize_program(program, gate_set),
@@ -536,6 +539,8 @@ class Engine(abstract_engine.AbstractEngine):
         return engine_program.EngineProgram(
             self.project_id, new_program_id, self.context, new_program
         )
+
+    create_program = duet.sync(create_program_async)
 
     @util.deprecated_gate_set_parameter
     def create_batch_program(

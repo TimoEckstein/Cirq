@@ -15,6 +15,7 @@
 import datetime
 from typing import Dict, List, Optional, Sequence, Set, TYPE_CHECKING, Union
 
+import duet
 from google.protobuf import any_pb2
 
 import cirq
@@ -63,7 +64,7 @@ class EngineProgram(abstract_program.AbstractProgram):
         self._program = _program
         self.result_type = result_type
 
-    def run_sweep(
+    async def run_sweep_async(
         self,
         job_id: Optional[str] = None,
         params: cirq.Sweepable = None,
@@ -105,7 +106,7 @@ class EngineProgram(abstract_program.AbstractProgram):
             job_id = engine_base._make_random_id('job-')
         run_context = self.context._serialize_run_context(params, repetitions)
 
-        created_job_id, job = self.context.client.create_job(
+        created_job_id, job = await self.context.client.create_job_async(
             project_id=self.project_id,
             program_id=self.program_id,
             job_id=job_id,
@@ -117,6 +118,8 @@ class EngineProgram(abstract_program.AbstractProgram):
         return engine_job.EngineJob(
             self.project_id, self.program_id, created_job_id, self.context, job
         )
+
+    run_sweep = duet.sync(run_sweep_async)
 
     def run_batch(
         self,
