@@ -92,10 +92,7 @@ def test_datetime():
 def test_bad_reservation():
     p = NothingProcessor(processor_id='test')
     with pytest.raises(ValueError, match='after the start time'):
-        _ = p.create_reservation(
-            start_time=_time(2000000),
-            end_time=_time(1000000),
-        )
+        _ = p.create_reservation(start_time=_time(2000000), end_time=_time(1000000))
 
 
 def test_reservations():
@@ -213,25 +210,13 @@ def test_get_schedule():
         slot_type=qenums.QuantumTimeSlot.TimeSlotType.OPEN_SWIM,
     )
     p = NothingProcessor(processor_id='test', schedule=[unbounded_start, unbounded_end])
-    assert p.get_schedule(
-        from_time=_time(500000),
-        to_time=_time(2500000),
-    ) == [unbounded_start, unbounded_end]
-    assert p.get_schedule(
-        from_time=_time(1500000),
-        to_time=_time(2500000),
-    ) == [unbounded_end]
-    assert p.get_schedule(
-        from_time=_time(500000),
-        to_time=_time(1500000),
-    ) == [unbounded_start]
-    assert (
-        p.get_schedule(
-            from_time=_time(1200000),
-            to_time=_time(1500000),
-        )
-        == []
-    )
+    assert p.get_schedule(from_time=_time(500000), to_time=_time(2500000)) == [
+        unbounded_start,
+        unbounded_end,
+    ]
+    assert p.get_schedule(from_time=_time(1500000), to_time=_time(2500000)) == [unbounded_end]
+    assert p.get_schedule(from_time=_time(500000), to_time=_time(1500000)) == [unbounded_start]
+    assert p.get_schedule(from_time=_time(1200000), to_time=_time(1500000)) == []
 
 
 @pytest.mark.parametrize(
@@ -258,10 +243,7 @@ def test_get_schedule():
 def test_create_reservation_not_available(time_slot):
     p = NothingProcessor(processor_id='test', schedule=[time_slot])
     with pytest.raises(ValueError, match='Time slot is not available for reservations'):
-        p.create_reservation(
-            start_time=_time(500000),
-            end_time=_time(1500000),
-        )
+        p.create_reservation(start_time=_time(500000), end_time=_time(1500000))
 
 
 def test_create_reservation_open_time_slots():
@@ -272,10 +254,7 @@ def test_create_reservation_open_time_slots():
         slot_type=qenums.QuantumTimeSlot.TimeSlotType.UNALLOCATED,
     )
     p = NothingProcessor(processor_id='test', schedule=[time_slot])
-    p.create_reservation(
-        start_time=_time(500000),
-        end_time=_time(1500000),
-    )
+    p.create_reservation(start_time=_time(500000), end_time=_time(1500000))
     assert p.get_schedule(from_time=_time(200000), to_time=_time(2500000)) == [
         qtypes.QuantumTimeSlot(
             processor_name='test',
@@ -300,10 +279,7 @@ def test_create_reservation_split_time_slots():
         slot_type=qenums.QuantumTimeSlot.TimeSlotType.UNALLOCATED,
     )
     p = NothingProcessor(processor_id='test', schedule=[time_slot])
-    p.create_reservation(
-        start_time=_time(1200000),
-        end_time=_time(1500000),
-    )
+    p.create_reservation(start_time=_time(1200000), end_time=_time(1500000))
     assert p.get_schedule(from_time=_time(200000), to_time=_time(2500000)) == [
         qtypes.QuantumTimeSlot(
             processor_name='test',
@@ -334,10 +310,7 @@ def test_create_reservation_add_at_end():
         slot_type=qenums.QuantumTimeSlot.TimeSlotType.UNALLOCATED,
     )
     p = NothingProcessor(processor_id='test', schedule=[time_slot])
-    p.create_reservation(
-        start_time=_time(2500000),
-        end_time=_time(3500000),
-    )
+    p.create_reservation(start_time=_time(2500000), end_time=_time(3500000))
     assert p.get_schedule(from_time=_time(500000), to_time=_time(2500000)) == [
         qtypes.QuantumTimeSlot(
             processor_name='test',
@@ -362,14 +335,8 @@ def test_create_reservation_border_conditions():
         slot_type=qenums.QuantumTimeSlot.TimeSlotType.UNALLOCATED,
     )
     p = NothingProcessor(processor_id='test', schedule=[time_slot])
-    p.create_reservation(
-        start_time=_time(1900000),
-        end_time=_time(2000000),
-    )
-    p.create_reservation(
-        start_time=_time(1000000),
-        end_time=_time(1100000),
-    )
+    p.create_reservation(start_time=_time(1900000), end_time=_time(2000000))
+    p.create_reservation(start_time=_time(1000000), end_time=_time(1100000))
     assert p.get_schedule(from_time=_time(200000), to_time=_time(2500000)) == [
         qtypes.QuantumTimeSlot(
             processor_name='test',
@@ -404,14 +371,8 @@ def test_create_reservation_unbounded():
         slot_type=qenums.QuantumTimeSlot.TimeSlotType.UNALLOCATED,
     )
     p = NothingProcessor(processor_id='test', schedule=[time_slot_begin, time_slot_end])
-    p.create_reservation(
-        start_time=_time(1000000),
-        end_time=_time(3000000),
-    )
-    p.create_reservation(
-        start_time=_time(4000000),
-        end_time=_time(6000000),
-    )
+    p.create_reservation(start_time=_time(1000000), end_time=_time(3000000))
+    p.create_reservation(start_time=_time(4000000), end_time=_time(6000000))
     assert p.get_schedule(from_time=_time(200000), to_time=_time(10000000)) == [
         qtypes.QuantumTimeSlot(
             processor_name='test',
@@ -450,14 +411,8 @@ def test_create_reservation_splitunbounded():
         slot_type=qenums.QuantumTimeSlot.TimeSlotType.UNALLOCATED,
     )
     p = NothingProcessor(processor_id='test', schedule=[time_slot_begin, time_slot_end])
-    p.create_reservation(
-        start_time=_time(1000000),
-        end_time=_time(2000000),
-    )
-    p.create_reservation(
-        start_time=_time(6000000),
-        end_time=_time(7000000),
-    )
+    p.create_reservation(start_time=_time(1000000), end_time=_time(2000000))
+    p.create_reservation(start_time=_time(6000000), end_time=_time(7000000))
     assert p.get_schedule(from_time=_time(200000), to_time=_time(10000000)) == [
         qtypes.QuantumTimeSlot(
             processor_name='test',

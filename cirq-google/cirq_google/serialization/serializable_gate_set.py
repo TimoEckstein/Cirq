@@ -14,16 +14,7 @@
 """Support for serializing and deserializing cirq_google.api.v2 protos."""
 
 from itertools import chain
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Type, Union
 
 import cirq
 from cirq_google.api import v2
@@ -340,10 +331,7 @@ class SerializableGateSet(serializer.Serializer):
 
     def deserialize_op(
         self,
-        operation_proto: Union[
-            v2.program_pb2.Operation,
-            v2.program_pb2.CircuitOperation,
-        ],
+        operation_proto: Union[v2.program_pb2.Operation, v2.program_pb2.CircuitOperation,],
         **kwargs,
     ) -> cirq.Operation:
         """Disambiguation for operation deserialization."""

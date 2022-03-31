@@ -415,8 +415,7 @@ def _get_job_results_v1(result: v1.program_pb2.Result) -> Sequence[cirq.Result]:
 
             trial_results.append(
                 cirq.ResultDict(
-                    params=cirq.ParamResolver(result.params.assignments),
-                    measurements=measurements,
+                    params=cirq.ParamResolver(result.params.assignments), measurements=measurements
                 )
             )
     return trial_results
@@ -448,8 +447,7 @@ def _raise_on_failure(job: quantum.types.QuantumJob) -> None:
         elif state in TERMINAL_STATES:
             raise RuntimeError(
                 'Job {} failed in state {}.'.format(
-                    name,
-                    quantum.types.ExecutionStatus.State.Name(state),
+                    name, quantum.types.ExecutionStatus.State.Name(state)
                 )
             )
         else:

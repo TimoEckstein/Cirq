@@ -858,9 +858,7 @@ class EngineClient:
             else ''
         )
 
-        reservation = qtypes.QuantumReservation(
-            name=name,
-        )
+        reservation = qtypes.QuantumReservation(name=name)
         paths = []
         if start:
             reservation.start_time.seconds = int(start.timestamp())

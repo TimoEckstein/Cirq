@@ -118,7 +118,5 @@ def get_qcs_objects_for_notebook(
         device = get_engine_device(processor_id)
         sampler = get_engine_sampler(processor_id, gate_set_name="sqrt_iswap")
     return QCSObjectsForNotebook(
-        device=device,
-        sampler=sampler,
-        signed_in=not google_cloud_signin_failed,
+        device=device, sampler=sampler, signed_in=not google_cloud_signin_failed
     )

@@ -393,11 +393,7 @@ def test_add_labels(add_program_labels):
     program = cg.EngineProgram('a', 'b', EngineContext(), _program=qtypes.QuantumProgram(labels={}))
     assert program.labels() == {}
 
-    add_program_labels.return_value = qtypes.QuantumProgram(
-        labels={
-            'a': '1',
-        }
-    )
+    add_program_labels.return_value = qtypes.QuantumProgram(labels={'a': '1'})
     assert program.add_labels({'a': '1'}).labels() == {'a': '1'}
     add_program_labels.assert_called_with('a', 'b', {'a': '1'})
 
@@ -413,11 +409,7 @@ def test_remove_labels(remove_program_labels):
     )
     assert program.labels() == {'a': '1', 'b': '1'}
 
-    remove_program_labels.return_value = qtypes.QuantumProgram(
-        labels={
-            'b': '1',
-        }
-    )
+    remove_program_labels.return_value = qtypes.QuantumProgram(labels={'b': '1'})
     assert program.remove_labels(['a']).labels() == {'b': '1'}
     remove_program_labels.assert_called_with('a', 'b', ['a'])
 
