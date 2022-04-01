@@ -337,7 +337,7 @@ class Engine(abstract_engine.AbstractEngine):
     run_sweep = duet.sync(run_sweep_async)
 
     @util.deprecated_gate_set_parameter
-    def run_batch(
+    async def run_batch_async(
         self,
         programs: Sequence[cirq.AbstractCircuit],
         program_id: Optional[str] = None,
@@ -409,7 +409,7 @@ class Engine(abstract_engine.AbstractEngine):
         engine_program = self.create_batch_program(
             programs, program_id, description=program_description, labels=program_labels
         )
-        return engine_program.run_batch(
+        return await engine_program.run_batch_async(
             job_id=job_id,
             params_list=params_list,
             repetitions=repetitions,
@@ -417,6 +417,8 @@ class Engine(abstract_engine.AbstractEngine):
             description=job_description,
             labels=job_labels,
         )
+
+    run_batch = duet.sync(run_batch_async)
 
     @util.deprecated_gate_set_parameter
     def run_calibration(
@@ -543,7 +545,7 @@ class Engine(abstract_engine.AbstractEngine):
     create_program = duet.sync(create_program_async)
 
     @util.deprecated_gate_set_parameter
-    def create_batch_program(
+    async def create_batch_program_async(
         self,
         programs: Sequence[cirq.AbstractCircuit],
         program_id: Optional[str] = None,
@@ -580,7 +582,7 @@ class Engine(abstract_engine.AbstractEngine):
         for program in programs:
             gate_set.serialize(program, msg=batch.programs.add())
 
-        new_program_id, new_program = self.context.client.create_program(
+        new_program_id, new_program = await self.context.client.create_program_async(
             self.project_id,
             program_id,
             code=util.pack_any(batch),
@@ -591,6 +593,8 @@ class Engine(abstract_engine.AbstractEngine):
         return engine_program.EngineProgram(
             self.project_id, new_program_id, self.context, new_program, result_type=ResultType.Batch
         )
+
+    create_batch_program = duet.sync(create_batch_program_async)
 
     @util.deprecated_gate_set_parameter
     def create_calibration_program(
